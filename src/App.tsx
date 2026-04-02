@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Send from "./pages/Send";
 import Receive from "./pages/Receive";
 import Withdraw from "./pages/Withdraw";
+import Deposit from "./pages/Deposit";
 import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/send" element={<ProtectedRoute><Send /></ProtectedRoute>} />
             <Route path="/receive" element={<ProtectedRoute><Receive /></ProtectedRoute>} />
             <Route path="/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
+            <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
