@@ -15,6 +15,7 @@ import Admin from "./pages/Admin";
 import ExchangeRates from "./pages/ExchangeRates";
 import Statement from "./pages/Statement";
 import Settings from "./pages/Settings";
+import KYC from "./pages/KYC";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
