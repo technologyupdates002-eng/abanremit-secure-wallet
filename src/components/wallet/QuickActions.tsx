@@ -1,4 +1,4 @@
-import { Send, Download, ArrowUpDown, Plus, DollarSign, FileText } from "lucide-react";
+import { Send, Download, ArrowUpDown, Plus, DollarSign, FileText, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function QuickActions() {
