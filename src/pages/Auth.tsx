@@ -5,8 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Wallet, Mail, Lock, User, Phone, ArrowRight } from "lucide-react";
+import { Wallet, Mail, Lock, User, Phone, ArrowRight, Globe } from "lucide-react";
+
+const COUNTRIES = [
+  { code: "KE", name: "Kenya", flag: "🇰🇪" },
+  { code: "US", name: "United States", flag: "🇺🇸" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
+  { code: "NG", name: "Nigeria", flag: "🇳🇬" },
+  { code: "ZA", name: "South Africa", flag: "🇿🇦" },
+  { code: "GH", name: "Ghana", flag: "🇬🇭" },
+  { code: "UG", name: "Uganda", flag: "🇺🇬" },
+  { code: "TZ", name: "Tanzania", flag: "🇹🇿" },
+  { code: "RW", name: "Rwanda", flag: "🇷🇼" },
+  { code: "ET", name: "Ethiopia", flag: "🇪🇹" },
+  { code: "IN", name: "India", flag: "🇮🇳" },
+  { code: "JP", name: "Japan", flag: "🇯🇵" },
+  { code: "CA", name: "Canada", flag: "🇨🇦" },
+  { code: "AU", name: "Australia", flag: "🇦🇺" },
+  { code: "CH", name: "Switzerland", flag: "🇨🇭" },
+  { code: "CN", name: "China", flag: "🇨🇳" },
+  { code: "AE", name: "UAE", flag: "🇦🇪" },
+  { code: "BR", name: "Brazil", flag: "🇧🇷" },
+  { code: "EG", name: "Egypt", flag: "🇪🇬" },
+  { code: "EU", name: "European Union", flag: "🇪🇺" },
+];
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +38,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("KE");
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +60,7 @@ export default function Auth() {
         setLoading(false);
         return;
       }
-      const { error } = await signUp(email, password, fullName, phone);
+      const { error } = await signUp(email, password, fullName, phone, country);
       if (error) {
         toast.error(error.message);
       } else {
@@ -72,28 +97,29 @@ export default function Auth() {
                     <Label htmlFor="name" className="text-muted-foreground text-sm">Full Name</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="John Doe"
-                        className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground"
-                        required
-                      />
+                      <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground" required />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-muted-foreground text-sm">Phone (optional)</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="phone"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+254 700 000 000"
-                        className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground"
-                      />
+                      <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 700 000 000" className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground" />
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-muted-foreground text-sm">Country</Label>
+                    <Select value={country} onValueChange={setCountry}>
+                      <SelectTrigger className="bg-secondary border-border/50 text-foreground">
+                        <Globe className="w-4 h-4 mr-2 text-muted-foreground" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map(c => (
+                          <SelectItem key={c.code} value={c.code}>{c.flag} {c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </>
               )}
@@ -102,15 +128,7 @@ export default function Auth() {
                 <Label htmlFor="email" className="text-muted-foreground text-sm">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground"
-                    required
-                  />
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground" required />
                 </div>
               </div>
 
@@ -118,16 +136,7 @@ export default function Auth() {
                 <Label htmlFor="password" className="text-muted-foreground text-sm">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground"
-                    required
-                    minLength={6}
-                  />
+                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10 bg-secondary border-border/50 text-foreground placeholder:text-muted-foreground" required minLength={6} />
                 </div>
               </div>
 
@@ -141,10 +150,7 @@ export default function Auth() {
             </form>
 
             <div className="mt-6 text-center">
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
+              <button onClick={() => setIsLogin(!isLogin)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
               </button>
             </div>

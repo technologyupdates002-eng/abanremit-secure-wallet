@@ -1,13 +1,13 @@
 import { useAuth } from "@/lib/auth";
 import { useWallet, useProfile, useTransactions, useNotifications, useHasPin } from "@/hooks/useWallet";
+import { useIsAdmin } from "@/hooks/useAdmin";
 import { BalanceCard } from "@/components/wallet/BalanceCard";
 import { QuickActions } from "@/components/wallet/QuickActions";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { SetPinModal } from "@/components/wallet/SetPinModal";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Bell, LogOut, Shield, Wallet } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Bell, LogOut, Shield, Wallet, Settings, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Index() {
@@ -17,10 +17,10 @@ export default function Index() {
   const { data: transactions, isLoading: txLoading } = useTransactions();
   const { data: notifications } = useNotifications();
   const { data: hasPin } = useHasPin();
+  const { data: isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const [showPinModal, setShowPinModal] = useState(false);
 
-  // Prompt to set PIN if not set
   useEffect(() => {
     if (hasPin === false && user) {
       const timer = setTimeout(() => setShowPinModal(true), 1500);
@@ -49,7 +49,7 @@ export default function Index() {
               <p className="text-sm font-semibold text-foreground">{profile?.full_name || "User"}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button onClick={() => navigate("/notifications")} className="relative p-2 rounded-full hover:bg-secondary">
               <Bell className="w-5 h-5 text-muted-foreground" />
               {unreadCount > 0 && (
@@ -58,9 +58,17 @@ export default function Index() {
                 </span>
               )}
             </button>
+            <button onClick={() => navigate("/settings")} className="p-2 rounded-full hover:bg-secondary">
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </button>
             <button onClick={() => setShowPinModal(true)} className="p-2 rounded-full hover:bg-secondary">
               <Shield className="w-5 h-5 text-muted-foreground" />
             </button>
+            {isAdmin && (
+              <button onClick={() => navigate("/admin")} className="p-2 rounded-full hover:bg-secondary">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+              </button>
+            )}
             <button onClick={signOut} className="p-2 rounded-full hover:bg-secondary">
               <LogOut className="w-5 h-5 text-muted-foreground" />
             </button>

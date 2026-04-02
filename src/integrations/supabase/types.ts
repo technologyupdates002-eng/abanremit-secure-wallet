@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_wallet: {
+        Row: {
+          balance: number
+          currency: string
+          id: string
+          updated_at: string
+          wallet_id: string
+        }
+        Insert: {
+          balance?: number
+          currency?: string
+          id?: string
+          updated_at?: string
+          wallet_id?: string
+        }
+        Update: {
+          balance?: number
+          currency?: string
+          id?: string
+          updated_at?: string
+          wallet_id?: string
+        }
+        Relationships: []
+      }
       card_transactions: {
         Row: {
           amount: number
@@ -50,6 +74,75 @@ export type Database = {
           status?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      exchange_rates: {
+        Row: {
+          created_at: string
+          from_currency: string
+          id: string
+          rate: number
+          to_currency: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_currency: string
+          id?: string
+          rate: number
+          to_currency: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_currency?: string
+          id?: string
+          rate?: number
+          to_currency?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exchange_rates_from_currency_fkey"
+            columns: ["from_currency"]
+            isOneToOne: false
+            referencedRelation: "supported_currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "exchange_rates_to_currency_fkey"
+            columns: ["to_currency"]
+            isOneToOne: false
+            referencedRelation: "supported_currencies"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      global_settings: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: string
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: string
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string
         }
         Relationships: []
       }
@@ -169,31 +262,67 @@ export type Database = {
       }
       profiles: {
         Row: {
+          country: string | null
           created_at: string
           full_name: string
           id: string
           kyc_status: Database["public"]["Enums"]["kyc_status"]
+          otp_channel: string | null
           phone: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          country?: string | null
           created_at?: string
           full_name?: string
           id?: string
           kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          otp_channel?: string | null
           phone?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          country?: string | null
           created_at?: string
           full_name?: string
           id?: string
           kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          otp_channel?: string | null
           phone?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      supported_currencies: {
+        Row: {
+          code: string
+          country: string
+          created_at: string
+          flag_emoji: string
+          is_active: boolean
+          name: string
+          symbol: string
+        }
+        Insert: {
+          code: string
+          country: string
+          created_at?: string
+          flag_emoji?: string
+          is_active?: boolean
+          name: string
+          symbol: string
+        }
+        Update: {
+          code?: string
+          country?: string
+          created_at?: string
+          flag_emoji?: string
+          is_active?: boolean
+          name?: string
+          symbol?: string
         }
         Relationships: []
       }
@@ -269,6 +398,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallets: {
         Row: {
           balance: number
@@ -304,7 +451,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      charge_statement_fee: { Args: { p_wallet_id: string }; Returns: Json }
       generate_wallet_id: { Args: never; Returns: string }
+      get_fee_rate: { Args: { p_type: string }; Returns: number }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       lookup_wallet: { Args: { p_wallet_id: string }; Returns: Json }
       process_transfer: {
         Args: {
@@ -320,6 +476,7 @@ export type Database = {
       verify_transaction_pin: { Args: { p_pin: string }; Returns: Json }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       kyc_status: "pending" | "verified" | "rejected"
       transaction_status:
         | "success"
@@ -460,6 +617,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       kyc_status: ["pending", "verified", "rejected"],
       transaction_status: [
         "success",

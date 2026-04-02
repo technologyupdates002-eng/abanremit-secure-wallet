@@ -11,6 +11,10 @@ import Receive from "./pages/Receive";
 import Withdraw from "./pages/Withdraw";
 import Deposit from "./pages/Deposit";
 import Notifications from "./pages/Notifications";
+import Admin from "./pages/Admin";
+import ExchangeRates from "./pages/ExchangeRates";
+import Statement from "./pages/Statement";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +48,10 @@ const App = () => (
             <Route path="/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
             <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/exchange-rates" element={<ProtectedRoute><ExchangeRates /></ProtectedRoute>} />
+            <Route path="/statement" element={<ProtectedRoute><Statement /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
