@@ -267,6 +267,3 @@ export default function Send() {
     </div>
   );
 }
-
-// Need to import Send icon
-import { Send as SendIcon } from "lucide-react";
