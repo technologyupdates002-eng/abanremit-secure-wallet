@@ -9,8 +9,9 @@ export function QuickActions() {
     { icon: Download, label: "Receive", color: "bg-info/20 text-info", onClick: () => navigate("/receive") },
     { icon: Plus, label: "Deposit", color: "bg-accent/20 text-accent-foreground", onClick: () => navigate("/deposit") },
     { icon: ArrowUpDown, label: "Withdraw", color: "bg-warning/20 text-warning", onClick: () => navigate("/withdraw") },
-    { icon: DollarSign, label: "Rates", color: "bg-primary/20 text-primary", onClick: () => navigate("/exchange-rates") },
-    { icon: FileText, label: "Statement", color: "bg-info/20 text-info", onClick: () => navigate("/statement") },
+    { icon: DollarSign, label: "Rates", color: "bg-primary/10 text-primary", onClick: () => navigate("/exchange-rates") },
+    { icon: FileText, label: "Statement", color: "bg-primary/10 text-primary", onClick: () => navigate("/statement") },
+    { icon: ShieldCheck, label: "KYC", color: "bg-primary/10 text-primary", onClick: () => navigate("/kyc") },
   ];
 
   return (
