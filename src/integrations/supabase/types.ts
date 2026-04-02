@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      card_transactions: {
+        Row: {
+          amount: number
+          callback_data: Json | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          invoice_id: string | null
+          reference: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          callback_data?: Json | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          invoice_id?: string | null
+          reference?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          callback_data?: Json | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          invoice_id?: string | null
+          reference?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mpesa_transactions: {
+        Row: {
+          amount: number
+          callback_data: Json | null
+          checkout_request_id: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          invoice_id: string | null
+          merchant_request_id: string | null
+          phone: string
+          reference: string | null
+          status: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          callback_data?: Json | null
+          checkout_request_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          invoice_id?: string | null
+          merchant_request_id?: string | null
+          phone: string
+          reference?: string | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          callback_data?: Json | null
+          checkout_request_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          invoice_id?: string | null
+          merchant_request_id?: string | null
+          phone?: string
+          reference?: string | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -41,6 +131,39 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      otp_codes: {
+        Row: {
+          code_hash: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          phone: string
+          purpose: string
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          phone: string
+          purpose?: string
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          phone?: string
+          purpose?: string
+          user_id?: string
+          verified?: boolean | null
         }
         Relationships: []
       }
@@ -198,7 +321,12 @@ export type Database = {
     }
     Enums: {
       kyc_status: "pending" | "verified" | "rejected"
-      transaction_status: "success" | "pending" | "failed"
+      transaction_status:
+        | "success"
+        | "pending"
+        | "failed"
+        | "processing"
+        | "reversed"
       transaction_type:
         | "wallet_transfer"
         | "mobile_money"
@@ -333,7 +461,13 @@ export const Constants = {
   public: {
     Enums: {
       kyc_status: ["pending", "verified", "rejected"],
-      transaction_status: ["success", "pending", "failed"],
+      transaction_status: [
+        "success",
+        "pending",
+        "failed",
+        "processing",
+        "reversed",
+      ],
       transaction_type: [
         "wallet_transfer",
         "mobile_money",
