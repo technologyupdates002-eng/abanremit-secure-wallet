@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Search, User, CheckCircle2, AlertCircle, Lock } from "lucide-react";
+import { ArrowLeft, Search, User, CheckCircle2, AlertCircle, Lock, Send as SendIcon } from "lucide-react";
 import { useWallet, lookupWallet, verifyPin, processTransfer } from "@/hooks/useWallet";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
