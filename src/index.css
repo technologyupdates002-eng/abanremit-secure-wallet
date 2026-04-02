@@ -6,48 +6,48 @@
 
 @layer base {
   :root {
-    --background: 220 20% 7%;
-    --foreground: 0 0% 95%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
-    --card: 220 18% 11%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 220 18% 13%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 152 69% 46%;
-    --primary-foreground: 220 20% 7%;
+    --primary: 217 91% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 16% 16%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 222 47% 20%;
 
-    --muted: 220 14% 14%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 152 50% 40%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 18%;
-    --input: 220 14% 18%;
-    --ring: 152 69% 46%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 50%;
 
     --radius: 0.75rem;
 
     --success: 152 69% 46%;
     --warning: 38 92% 50%;
-    --info: 210 100% 56%;
+    --info: 217 91% 50%;
 
-    --sidebar-background: 220 18% 9%;
-    --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 152 69% 46%;
-    --sidebar-primary-foreground: 220 20% 7%;
-    --sidebar-accent: 220 16% 16%;
-    --sidebar-accent-foreground: 0 0% 85%;
-    --sidebar-border: 220 14% 18%;
-    --sidebar-ring: 152 69% 46%;
+    --sidebar-background: 217 91% 97%;
+    --sidebar-foreground: 222 47% 20%;
+    --sidebar-primary: 217 91% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 94%;
+    --sidebar-accent-foreground: 222 47% 20%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 91% 50%;
   }
 }
 
@@ -64,15 +64,15 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl;
+    @apply bg-card border border-border/50 rounded-2xl shadow-sm;
   }
 
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(152, 69%, 46%), hsl(152, 69%, 36%));
+    background: linear-gradient(135deg, hsl(217, 91%, 50%), hsl(217, 91%, 40%));
   }
 
   .gradient-dark {
-    background: linear-gradient(180deg, hsl(220, 20%, 10%) 0%, hsl(220, 20%, 7%) 100%);
+    background: linear-gradient(180deg, hsl(210, 40%, 98%) 0%, hsl(210, 40%, 95%) 100%);
   }
 
   .text-balance {

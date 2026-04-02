@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useProfile } from "@/hooks/useWallet";
 
 interface OtpModalProps {
   open: boolean;
@@ -19,6 +20,9 @@ export function OtpModal({ open, onClose, onVerified, phone, purpose = "verifica
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const { data: profile } = useProfile();
+
+  const otpChannel = (profile as any)?.otp_channel || "phone";
 
   useEffect(() => {
     if (open && countdown === 0) {
@@ -36,13 +40,14 @@ export function OtpModal({ open, onClose, onVerified, phone, purpose = "verifica
     setSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-otp", {
-        body: { phone, purpose },
+        body: { phone, purpose, channel: otpChannel },
       });
       if (error) throw error;
       if (data?.error) {
         toast.error(data.error);
       } else {
-        toast.success("OTP sent to your phone");
+        const target = data?.channel === "email" ? "email" : "phone";
+        toast.success(`OTP sent to your ${target}`);
         setCountdown(60);
       }
     } catch {
@@ -74,6 +79,8 @@ export function OtpModal({ open, onClose, onVerified, phone, purpose = "verifica
     setLoading(false);
   };
 
+  const targetLabel = otpChannel === "email" ? "your email" : phone;
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="bg-card border-border sm:max-w-sm">
@@ -85,7 +92,7 @@ export function OtpModal({ open, onClose, onVerified, phone, purpose = "verifica
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Enter the 6-digit code sent to <span className="font-medium text-foreground">{phone}</span>
+            Enter the 6-digit code sent to <span className="font-medium text-foreground">{targetLabel}</span>
           </p>
           <Input
             type="text"
