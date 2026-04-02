@@ -1,4 +1,4 @@
-import { Send, Download, ArrowUpDown, Smartphone } from "lucide-react";
+import { Send, Download, ArrowUpDown, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function QuickActions() {
@@ -7,8 +7,8 @@ export function QuickActions() {
   const actions = [
     { icon: Send, label: "Send", color: "bg-primary/20 text-primary", onClick: () => navigate("/send") },
     { icon: Download, label: "Receive", color: "bg-info/20 text-info", onClick: () => navigate("/receive") },
+    { icon: Plus, label: "Deposit", color: "bg-accent/20 text-accent-foreground", onClick: () => navigate("/deposit") },
     { icon: ArrowUpDown, label: "Withdraw", color: "bg-warning/20 text-warning", onClick: () => navigate("/withdraw") },
-    { icon: Smartphone, label: "Airtime", color: "bg-destructive/20 text-destructive", onClick: () => {} },
   ];
 
   return (
