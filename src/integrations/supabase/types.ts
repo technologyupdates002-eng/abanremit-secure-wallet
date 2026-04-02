@@ -14,16 +14,197 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          kyc_status: Database["public"]["Enums"]["kyc_status"]
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transaction_pins: {
+        Row: {
+          created_at: string
+          failed_attempts: number
+          hashed_pin: string
+          id: string
+          is_locked: boolean
+          locked_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          failed_attempts?: number
+          hashed_pin: string
+          id?: string
+          is_locked?: boolean
+          locked_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          failed_attempts?: number
+          hashed_pin?: string
+          id?: string
+          is_locked?: boolean
+          locked_until?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          fee: number
+          id: string
+          receiver_wallet: string
+          sender_wallet: string
+          status: Database["public"]["Enums"]["transaction_status"]
+          transaction_id: string
+          type: Database["public"]["Enums"]["transaction_type"]
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          fee?: number
+          id?: string
+          receiver_wallet: string
+          sender_wallet: string
+          status?: Database["public"]["Enums"]["transaction_status"]
+          transaction_id?: string
+          type?: Database["public"]["Enums"]["transaction_type"]
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          fee?: number
+          id?: string
+          receiver_wallet?: string
+          sender_wallet?: string
+          status?: Database["public"]["Enums"]["transaction_status"]
+          transaction_id?: string
+          type?: Database["public"]["Enums"]["transaction_type"]
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          id: string
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          wallet_id?: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_wallet_id: { Args: never; Returns: string }
+      lookup_wallet: { Args: { p_wallet_id: string }; Returns: Json }
+      process_transfer: {
+        Args: {
+          p_amount: number
+          p_description?: string
+          p_fee?: number
+          p_receiver_wallet: string
+          p_sender_wallet: string
+        }
+        Returns: Json
+      }
+      set_transaction_pin: { Args: { p_pin: string }; Returns: Json }
+      verify_transaction_pin: { Args: { p_pin: string }; Returns: Json }
     }
     Enums: {
-      [_ in never]: never
+      kyc_status: "pending" | "verified" | "rejected"
+      transaction_status: "success" | "pending" | "failed"
+      transaction_type:
+        | "wallet_transfer"
+        | "mobile_money"
+        | "bank_transfer"
+        | "deposit"
+        | "withdrawal"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +331,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      kyc_status: ["pending", "verified", "rejected"],
+      transaction_status: ["success", "pending", "failed"],
+      transaction_type: [
+        "wallet_transfer",
+        "mobile_money",
+        "bank_transfer",
+        "deposit",
+        "withdrawal",
+      ],
+    },
   },
 } as const
