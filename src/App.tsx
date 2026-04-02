@@ -15,6 +15,7 @@ import Admin from "./pages/Admin";
 import ExchangeRates from "./pages/ExchangeRates";
 import Statement from "./pages/Statement";
 import Settings from "./pages/Settings";
+import KYC from "./pages/KYC";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/exchange-rates" element={<ProtectedRoute><ExchangeRates /></ProtectedRoute>} />
             <Route path="/statement" element={<ProtectedRoute><Statement /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/kyc" element={<ProtectedRoute><KYC /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
