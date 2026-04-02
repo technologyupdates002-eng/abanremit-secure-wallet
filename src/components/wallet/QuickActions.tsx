@@ -15,7 +15,7 @@ export function QuickActions() {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-4 gap-2">
       {actions.map(({ icon: Icon, label, color, onClick }) => (
         <button key={label} onClick={onClick} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-card hover:bg-secondary transition-colors">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
