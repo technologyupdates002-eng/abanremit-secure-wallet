@@ -237,7 +237,7 @@ export default function Send() {
       {step === "processing" && (
         <div className="text-center py-12 animate-fade-in">
           <div className="w-16 h-16 rounded-full bg-primary/20 mx-auto mb-4 flex items-center justify-center animate-pulse">
-            <Send className="w-8 h-8 text-primary" />
+            <SendIcon className="w-8 h-8 text-primary" />
           </div>
           <p className="text-foreground font-semibold">Processing transfer...</p>
         </div>
