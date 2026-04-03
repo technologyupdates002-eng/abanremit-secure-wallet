@@ -57,6 +57,7 @@ const App = () => (
             <Route path="/kyc" element={<ProtectedRoute><KYC /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <InstallBanner />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
