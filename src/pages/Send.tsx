@@ -89,6 +89,18 @@ export default function Send() {
           wallet!.wallet_id, recipientWalletId, Number(amount), fee, description || undefined
         );
         setTxResult(result);
+
+        // Send SMS notifications for wallet transfers
+        if (result.success) {
+          try {
+            await supabase.functions.invoke("send-sms-notification", {
+              body: {
+                user_id: wallet!.user_id,
+                message: `AbanRemit: You sent ${currency} ${Number(amount).toLocaleString()} to ${recipientName} (${recipientWalletId}). Ref: ${result.transaction_id}`,
+              },
+            });
+          } catch { /* SMS is best effort */ }
+        }
       } else {
         // Phone-based send via M-Pesa B2C
         const { data, error } = await supabase.functions.invoke("intasend-b2c", {
