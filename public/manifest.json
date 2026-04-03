@@ -1,0 +1,21 @@
+{
+  "name": "AbanRemit - Digital Wallet",
+  "short_name": "AbanRemit",
+  "description": "Secure digital wallet for fast money transfers, payments, and financial services.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

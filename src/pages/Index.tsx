@@ -20,13 +20,14 @@ export default function Index() {
   const { data: isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinDismissed, setPinDismissed] = useState(false);
 
   useEffect(() => {
-    if (hasPin === false && user) {
+    if (hasPin === false && user && !pinDismissed && !showPinModal) {
       const timer = setTimeout(() => setShowPinModal(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, [hasPin, user]);
+  }, [hasPin, user, pinDismissed, showPinModal]);
 
   if (!user) {
     navigate("/auth");
@@ -103,7 +104,7 @@ export default function Index() {
         </div>
       </div>
 
-      <SetPinModal open={showPinModal} onClose={() => setShowPinModal(false)} />
+      <SetPinModal open={showPinModal} onClose={() => { setShowPinModal(false); setPinDismissed(true); }} />
     </div>
   );
 }
