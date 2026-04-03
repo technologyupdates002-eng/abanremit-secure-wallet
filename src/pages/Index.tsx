@@ -104,7 +104,7 @@ export default function Index() {
         </div>
       </div>
 
-      <SetPinModal open={showPinModal} onClose={() => setShowPinModal(false)} />
+      <SetPinModal open={showPinModal} onClose={() => { setShowPinModal(false); setPinDismissed(true); }} />
     </div>
   );
 }
