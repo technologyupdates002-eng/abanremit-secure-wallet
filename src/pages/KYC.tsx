@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Upload, ShieldCheck, Clock, XCircle, FileText, Camera } from "lucide-react";
+import { ArrowLeft, Upload, ShieldCheck, Clock, XCircle, FileText, Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,22 +38,27 @@ export default function KYC() {
       const userId = profile?.user_id;
       if (!userId) throw new Error("No user");
 
-      // Upload files to storage
       const uploads: { path: string; file: File }[] = [
-        { path: `kyc/${userId}/front-${Date.now()}`, file: frontFile },
+        { path: `kyc/${userId}/front-${Date.now()}.${frontFile.name.split('.').pop()}`, file: frontFile },
       ];
-      if (backFile) uploads.push({ path: `kyc/${userId}/back-${Date.now()}`, file: backFile });
-      if (selfieFile) uploads.push({ path: `kyc/${userId}/selfie-${Date.now()}`, file: selfieFile });
+      if (backFile) uploads.push({ path: `kyc/${userId}/back-${Date.now()}.${backFile.name.split('.').pop()}`, file: backFile });
+      if (selfieFile) uploads.push({ path: `kyc/${userId}/selfie-${Date.now()}.${selfieFile.name.split('.').pop()}`, file: selfieFile });
 
+      let uploadSuccess = true;
       for (const { path, file } of uploads) {
-        const { error } = await supabase.storage.from("kyc-documents").upload(path, file);
+        const { error } = await supabase.storage.from("kyc-documents").upload(path, file, { upsert: true });
         if (error) {
           console.error("Upload error:", error);
-          // Continue even if storage isn't set up
+          uploadSuccess = false;
+          toast.error(`Failed to upload ${file.name}: ${error.message}`);
         }
       }
 
-      // Update profile KYC status to pending (admin reviews)
+      if (!uploadSuccess) {
+        setSubmitting(false);
+        return;
+      }
+
       await supabase
         .from("profiles")
         .update({ kyc_status: "pending" } as any)
@@ -61,8 +66,8 @@ export default function KYC() {
 
       toast.success("KYC documents submitted for review");
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-    } catch (err) {
-      toast.error("Failed to submit documents");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to submit documents");
     }
     setSubmitting(false);
   };
@@ -191,7 +196,7 @@ export default function KYC() {
             </Card>
 
             <Button onClick={handleSubmit} disabled={submitting} className="w-full gradient-primary text-primary-foreground h-12">
-              {submitting ? "Submitting..." : "Submit for Review"}
+              {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</> : "Submit for Review"}
             </Button>
           </>
         )}

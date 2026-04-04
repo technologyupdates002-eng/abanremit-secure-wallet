@@ -90,15 +90,30 @@ export default function Send() {
         );
         setTxResult(result);
 
-        // Send SMS notifications for wallet transfers
+        // Send SMS notifications for wallet transfers (sender + receiver)
         if (result.success) {
           try {
-            await supabase.functions.invoke("send-sms-notification", {
+            // Notify sender
+            supabase.functions.invoke("send-sms-notification", {
               body: {
                 user_id: wallet!.user_id,
                 message: `AbanRemit: You sent ${currency} ${Number(amount).toLocaleString()} to ${recipientName} (${recipientWalletId}). Ref: ${result.transaction_id}`,
               },
-            });
+            }).catch(() => {});
+            // Notify receiver - look up receiver user_id from wallet
+            const { data: receiverWallet } = await supabase
+              .from("wallets")
+              .select("user_id")
+              .eq("wallet_id", recipientWalletId)
+              .single();
+            if (receiverWallet) {
+              supabase.functions.invoke("send-sms-notification", {
+                body: {
+                  user_id: receiverWallet.user_id,
+                  message: `AbanRemit: You received ${currency} ${Number(amount).toLocaleString()} from ${profile?.full_name || wallet!.wallet_id}. Ref: ${result.transaction_id}`,
+                },
+              }).catch(() => {});
+            }
           } catch { /* SMS is best effort */ }
         }
       } else {

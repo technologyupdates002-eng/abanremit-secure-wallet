@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Copy } from "lucide-react";
+import { Eye, EyeOff, Copy, Coins } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,17 +17,24 @@ export function BalanceCard({ walletId, balance, currency, fullName }: BalanceCa
     toast.success("Wallet ID copied!");
   };
 
+  const displayCurrency = currency === "ABC" ? "ABC" : currency;
+  const currencyLabel = currency === "ABC" ? "Aban Coin" : currency;
+
   return (
     <div className="gradient-primary rounded-2xl p-6 text-primary-foreground animate-fade-in">
       <div className="flex items-center justify-between mb-1">
-        <p className="text-sm opacity-80">Total Balance</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm opacity-80">Total Balance</p>
+          {currency === "ABC" && <Coins className="w-4 h-4 opacity-70" />}
+        </div>
         <button onClick={() => setVisible(!visible)} className="opacity-80 hover:opacity-100">
           {visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
         </button>
       </div>
-      <h2 className="text-3xl font-bold mb-4">
-        {visible ? `${currency} ${balance.toLocaleString("en", { minimumFractionDigits: 2 })}` : "••••••"}
+      <h2 className="text-3xl font-bold mb-1">
+        {visible ? `${displayCurrency} ${balance.toLocaleString("en", { minimumFractionDigits: 2 })}` : "••••••"}
       </h2>
+      <p className="text-xs opacity-60 mb-3">{currencyLabel}</p>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs opacity-70">{fullName}</p>
