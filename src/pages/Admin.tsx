@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Settings, Users, ArrowUpDown, DollarSign, Wallet, Smartphone } from "lucide-react";
+import { ArrowLeft, Settings, Users, ArrowUpDown, DollarSign, Wallet, Smartphone, ShieldCheck, Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsAdmin, useAdminWallet, useGlobalSettings, useAllExchangeRates, useAllUsers, useAllTransactions, useAllMpesaTransactions, useSupportedCurrencies } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
 
 function AdminSettings() {
@@ -101,32 +102,114 @@ function AdminExchangeRates() {
 
 function AdminUsers() {
   const { data: users, isLoading } = useAllUsers();
+  const queryClient = useQueryClient();
+  const [kycViewUser, setKycViewUser] = useState<any>(null);
+  const [kycDocs, setKycDocs] = useState<string[]>([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
+
+  const handleKycAction = async (userId: string, status: "verified" | "rejected") => {
+    const { error } = await supabase.from("profiles").update({ kyc_status: status }).eq("user_id", userId);
+    if (error) { toast.error("Failed to update KYC status"); return; }
+    toast.success(`KYC ${status}`);
+    queryClient.invalidateQueries({ queryKey: ["admin_all_users"] });
+    setKycViewUser(null);
+  };
+
+  const viewKycDocs = async (user: any) => {
+    setKycViewUser(user);
+    setLoadingDocs(true);
+    setKycDocs([]);
+    try {
+      const { data: files, error } = await supabase.storage
+        .from("kyc-documents")
+        .list(`kyc/${user.user_id}`, { limit: 20 });
+      if (error) { console.error("List error:", error); setLoadingDocs(false); return; }
+      const urls: string[] = [];
+      for (const file of (files || [])) {
+        const { data } = await supabase.storage
+          .from("kyc-documents")
+          .createSignedUrl(`kyc/${user.user_id}/${file.name}`, 600);
+        if (data?.signedUrl) urls.push(data.signedUrl);
+      }
+      setKycDocs(urls);
+    } catch (err) {
+      console.error("KYC docs error:", err);
+    }
+    setLoadingDocs(false);
+  };
+
   if (isLoading) return <p className="text-muted-foreground text-sm">Loading...</p>;
 
   return (
-    <div className="space-y-2">
-      {users?.map((u: any) => (
-        <Card key={u.id} className="glass-card">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-foreground">{u.full_name || "Unnamed"}</p>
-                <p className="text-xs text-muted-foreground">{u.phone || "No phone"} • {u.country || "KE"}</p>
-                <p className="text-xs text-muted-foreground">KYC: <span className={`font-medium ${u.kyc_status === "verified" ? "text-primary" : u.kyc_status === "rejected" ? "text-destructive" : "text-warning"}`}>{u.kyc_status}</span></p>
+    <>
+      <div className="space-y-2">
+        {users?.map((u: any) => (
+          <Card key={u.id} className="glass-card">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{u.full_name || "Unnamed"}</p>
+                  <p className="text-xs text-muted-foreground">{u.phone || "No phone"} • {u.country || "KE"}</p>
+                  <p className="text-xs text-muted-foreground">KYC: <span className={`font-medium ${u.kyc_status === "verified" ? "text-primary" : u.kyc_status === "rejected" ? "text-destructive" : "text-warning"}`}>{u.kyc_status}</span></p>
+                </div>
+                <div className="text-right space-y-1">
+                  {u.wallets?.[0] && (
+                    <>
+                      <p className="text-sm font-mono text-foreground">{u.wallets[0].wallet_id}</p>
+                      <p className="text-xs text-muted-foreground">{u.wallets[0].currency} {Number(u.wallets[0].balance).toLocaleString("en", { minimumFractionDigits: 2 })}</p>
+                    </>
+                  )}
+                  <Button size="sm" variant="outline" onClick={() => viewKycDocs(u)} className="text-xs">
+                    <Eye className="w-3 h-3 mr-1" /> KYC
+                  </Button>
+                </div>
               </div>
-              <div className="text-right">
-                {u.wallets?.[0] && (
-                  <>
-                    <p className="text-sm font-mono text-foreground">{u.wallets[0].wallet_id}</p>
-                    <p className="text-xs text-muted-foreground">{u.wallets[0].currency} {Number(u.wallets[0].balance).toLocaleString("en", { minimumFractionDigits: 2 })}</p>
-                  </>
-                )}
-              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Dialog open={!!kycViewUser} onOpenChange={(v) => !v && setKycViewUser(null)}>
+        <DialogContent className="bg-card border-border max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">KYC Review - {kycViewUser?.full_name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground">
+              <p>Status: <span className="font-medium text-foreground">{kycViewUser?.kyc_status}</span></p>
+              <p>Phone: {kycViewUser?.phone || "N/A"}</p>
+              <p>Country: {kycViewUser?.country || "N/A"}</p>
             </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+            <div>
+              <p className="text-sm font-medium text-foreground mb-2">Uploaded Documents</p>
+              {loadingDocs ? (
+                <p className="text-sm text-muted-foreground">Loading documents...</p>
+              ) : kycDocs.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No documents uploaded yet.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {kycDocs.map((url, i) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block">
+                      <img src={url} alt={`KYC doc ${i + 1}`} className="w-full h-32 object-cover rounded-lg border border-border" />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+            {kycViewUser?.kyc_status !== "verified" && (
+              <div className="flex gap-2">
+                <Button onClick={() => handleKycAction(kycViewUser?.user_id, "verified")} className="flex-1 gradient-primary text-primary-foreground">
+                  Approve
+                </Button>
+                <Button onClick={() => handleKycAction(kycViewUser?.user_id, "rejected")} variant="destructive" className="flex-1">
+                  Reject
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -146,7 +229,7 @@ function AdminTransactions() {
               <p className="text-sm text-foreground">{tx.sender_wallet} → {tx.receiver_wallet}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-semibold text-foreground">KES {Number(tx.amount).toLocaleString()}</p>
+              <p className="text-sm font-semibold text-foreground">ABC {Number(tx.amount).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">Fee: {Number(tx.fee).toLocaleString()}</p>
               <p className={`text-xs capitalize ${tx.status === "success" ? "text-primary" : tx.status === "failed" ? "text-destructive" : "text-warning"}`}>{tx.status}</p>
             </div>
@@ -206,13 +289,12 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-background p-4 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-4">
         <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="w-6 h-6" /></button>
         <h1 className="text-xl font-semibold text-foreground">Admin Dashboard</h1>
       </div>
 
-      {/* Admin Wallet Balance */}
       <Card className="glass-card mb-6">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -224,7 +306,7 @@ export default function Admin() {
               <p className="text-sm font-mono text-foreground">ABN-ADMIN</p>
             </div>
           </div>
-          <p className="text-lg font-bold text-primary">KES {adminWallet ? Number(adminWallet.balance).toLocaleString("en", { minimumFractionDigits: 2 }) : "0.00"}</p>
+          <p className="text-lg font-bold text-primary">ABC {adminWallet ? Number(adminWallet.balance).toLocaleString("en", { minimumFractionDigits: 2 }) : "0.00"}</p>
         </CardContent>
       </Card>
 
